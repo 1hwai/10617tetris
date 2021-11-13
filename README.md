@@ -4,3 +4,9 @@
 - 11/13 최종
   - 시작/종료 화면 제작 
   - v1.0
+
+[주요파일]
+- main.c
+- tetris_rule.c
+- define.c
+- define.h
