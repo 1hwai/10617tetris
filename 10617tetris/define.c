@@ -45,5 +45,6 @@ void releaseBuffer()
 
 int random(int from, int to)
 {
-	return rand() % (to - from + 1) + from;
+	srand(time(NULL));
+	return rand() % (to + 1 - from) + from;
 }
