@@ -1,122 +1,173 @@
 #include "Define.h"
-//°ÔÀÓ ½ÃÀÛ¿ë
-void init() {}
-//¾÷µ¥ÀÌÆ®¿ë
-void update() {}
-//·»´õ¿ë
-void render() {
-	draw(5, 5, "dfsfsf");
-}
-//°ÔÀÓ Á¾·á¿ë
-void release() {}
+
+void init(struct Board* board, int queue[2]);
+void update(struct Board* board, struct Piece* piece);
+void render(struct Board board, struct Piece piece, int queue1);
+void release();
+
+const char TETRIS[7][100] = {
+		"#### ##  ### ###  #### ##  ### ##     ####    ## ##",
+		"# ## ##   ##  ##  # ## ##   ##  ##     ##    ##   ##",
+		"  ##      ##        ##      ##  ##     ##    ####",
+		"  ##      ## ##     ##      ## ##      ##     #####",
+		"  ##      ##        ##      ## ##      ##        ###",
+		"  ##      ##  ##    ##      ##  ##     ##    ##   ##",
+		" ####    ### ###   ####    #### ##    ####    ## ##"
+};
 
 int main() {
 	const int fps = 60;
 	const int frameDelay = 1000 / fps;
+	system("mode con cols=120 lines=50 | title TETRIS");
+	//=========================
+	struct Piece piece = { 0 }, p = { 0 }; //p means point, to test whether the piece is in the border.
+	struct Board board = { 0 };
+	int built = 0;
+	int queue[2] = { 0 };
 	createBuffer();
-	init();
+	clearBuffer();
+	init(&board, queue);
 
-	while (1) {
-		clearBuffer();
-		update();
-		render();
-		flipBuffer();
-		Sleep(frameDelay);
+	for (; board.height < 20;) {
+		spawn(&piece, queue);
+		while (!(built)) {
+			clearBuffer();
+			update(&board, &piece);
+			render(board, piece, queue[1]);
+			moves(&board, &p, &piece, &built);
+			moveDown(&board, &p, &piece, &built);
+			checkHeight(&board);
+			flipBuffer();
+			Sleep(frameDelay);
+		}
+		built = 0;
 	}
-
-	render();
+	
 	release();
 	releaseBuffer();
 
-
 	return 0;
 }
-/*#include "Define.h"
 
-	//°ÔÀÓ ½ÃÀÛ¿ë
-	void init() {}
-	//¾÷µ¥ÀÌÆ®¿ë
-	void update() {}
-	//·»´õ¿ë
-	void render(int board[][10]) {
-		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 10; j++) {
-				board[i][j] = 0;
-				printf("%d ", board[i][j]);
+void init(struct Board* board, int queue[2]) {
+	char c;
+	int a = 1;
+	while (1) {
+		clearBuffer();
+		for (int i = 0; i < 7; i++) {
+			draw(10, i + 8, TETRIS[i]);
+		}
+		if (a % 2 == 1) {
+			draw(18, LINE + 8, "Press [Enter] to Start...");
+		}
+		if (_kbhit()) {
+			c = _getch();
+			if (c == ENTER)
+				break;
+		}
+		Sleep(1000);
+		a++;
+		flipBuffer();
+	}
+
+	board->height = 0;
+	board->level = 1;
+	board->line = 0;
+	board->score = 0;
+	queue[1] = random(1, 7);
+	flipBuffer();
+}
+void update(struct Board* board, struct Piece* piece) {
+	for (int i = 0; i < piece->size; i++) {
+		for (int j = 0; j < piece->size; j++) {
+			if (piece->shape[i][j] == 2) {
+				board->grid[i + piece->y][j + piece->x] = piece->shape[i][j];
 			}
-			printf("\n");
 		}
 	}
-	//°ÔÀÓ Á¾·á¿ë
-	void release() {}
 
-	static int dAddress[3];
-
-	int newPiece(int* size) {
-		int rn = random(1, 1);
-		switch (rn) {
-		case 1:
-			*size = 4;
+}
+void render(struct Board board, struct Piece piece, int queue1) {
+	draw(0, 30, "Press [Esc] to <Pause / Resume>");
+	for (int i = 0; i < 7; i++) {
+		draw(0, i, TETRIS[i]);
+	}
+	char str[20];
+	for (int i = 0; i < 20; i++) {
+		draw(0, i + LINE, "â–©");
+		draw(11, i + LINE, "â–©");
+		for (int j = 0; j < 10; j++) {
+			//sprintf_s(str, sizeof(str), "%d ", board.grid[i][j]);
+			//draw(j + 1, i + LINE, str);
+			switch (board.grid[i][j]) {
+				case 0:
+					draw(j + 1, i + LINE, "  ");
+					break;
+				case 1:
+					draw(j + 1, i + LINE, "â–¡");
+					break;
+				case 2:
+					draw(j + 1, i + LINE, "â– ");
+					break;
+			}
+		}
+	}
+	for (int i = 0; i < 12; i++) {
+		draw(i, 20 + LINE, "â–©");
+	}
+	//=====
+	int qArr[4][4] = { 0 };
+	char qstr[4][4];
+	queuePiece(queue1, qArr);
+	draw(15, LINE, "NEXT");
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 6; j++) {
+			if (i == 0 || i == 5 || j == 0 || j == 5) {
+				draw(i + 15, j + LINE + 1, "â–©");
+			}
+			else {
+				switch (qArr[i - 1][j - 1]) {
+				case 0:
+					draw(j + 15, i + LINE + 1, "  ");
+					break;
+				case 2:
+					draw(j + 15, i + LINE + 1, "â– ");
+					break;
+				}
+				if (queue1 == 1) {
+					draw(j + 15, 10, "  ");
+				}
+			}
+		}
+	}
+	//=====
+	char score[20];
+	char level[20];
+	char line[20];
+	sprintf_s(score, sizeof(score), "score : %d", board.score);
+	sprintf_s(level, sizeof(level), "level : %d", board.level);
+	sprintf_s(line, sizeof(line), "line : %d", board.line);
+	draw(15, 20, score);
+	draw(15, 21, level);
+	draw(15, 22, line);
+}
+void release() {
+	char c;
+	while (1) {
+		clearBuffer();
+		for (int i = 0; i < 7; i++) {
+			draw(10, i + 8, TETRIS[i]);
+		}
+		draw(18, LINE + 8, "Press [SPACE] to Re-Start...");
+		draw(18, LINE + 9, "Press Any Key to Shut Down...");
+		if (_kbhit()) {
+			c = _getch();
+			if (c == SPACE) {
+				main();
+			}
 			break;
 		}
-		int** piece = malloc(sizeof(int*) * *size);
-		for (int i = 0; i < *size; i++) {
-			piece[i] = malloc(sizeof(int) * *size);
-		}
-		int temp = &piece[0][0];
-		for (int i = 0; i < *size; i++) {
-			for (int j = 0; j < *size; j++) {
-				piece[i][j] = 0;
-				printf("%d ", &piece[i][j]);
-			}
-			printf("\n");
-			if (i >= 1) {
-				dAddress[i - 1] = &piece[i][0] - &piece[i - 1][0];
-				printf("%d - %d\n", &piece[i - 1][0], &piece[i][0]);
-			}
-		}
-		printf("\n========\n");
-		for (int i = 0; i < *size - 1; i++) {
-			printf("%d ", dAddress[i]);
-		}
-		printf("\n========\n");
-
-		printf("\n22========\n");
-		printf("Á¤´ä : &piece[1][0] = %d ", &piece[1][0]);
-		printf("&piece[1][0] = %d\n", &piece[0][0] + dAddress[0]);
-		printf("Á¤´ä : &piece[2][0] = %d ", &piece[2][0]);
-		printf("&piece[1][0] = %d\n", &piece[1][0] + dAddress[1]);
-		printf("Á¤´ä : &piece[3][0] = %d ", &piece[3][0]);
-		printf("&piece[1][0] = %d", &piece[2][0] + dAddress[2]);
-		printf("\n========\n");
-
-		return &piece[0][0];
+		//Sleep(1000);
+		flipBuffer();
 	}
-
-	int main() {
-		const int fps = 60;
-		const int frameDelay = 1000 / fps;
-		int board[21][12] = { 0 };
-		//I O J L 2 S T;
-		//4 2 3 3 3 3 3;
-		int size;
-		int* piece = newPiece(&size);
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				printf("%d ", *(piece));
-			}
-			printf("\n");
-		}
-		//printf("%d\n", piece);
-		/*for (int i = 0; i < 16; i++) {
-			printf("%d ", *(piece + i));
-			printf("\n");
-		}*/
-
-		/*for (int i = 0; ; i++) {
-			if (piece + i == 1) {
-				printf("%d\n", piece + i);
-				break;
-			}
-		}
-	return 0;*/
+}
