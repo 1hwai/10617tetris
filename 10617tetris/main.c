@@ -1,9 +1,9 @@
 #include "Define.h"
 
-void init(struct Board* board, int queue[2]);
+void init(struct Board* board, int queue[2], int* DebugMode);
 void update(struct Board* board, struct Piece* piece);
-void render(struct Board board, struct Piece piece, int queue1);
-void release();
+void render(struct Board board, struct Piece piece, int queue1, int DebugMode);
+void release(struct Board board);
 
 const char TETRIS[7][100] = {
 		"#### ##  ### ###  #### ##  ### ##     ####    ## ##",
@@ -16,26 +16,28 @@ const char TETRIS[7][100] = {
 };
 
 int main() {
-	const int fps = 60;
+	const int fps = 120;
 	const int frameDelay = 1000 / fps;
-	system("mode con cols=120 lines=50 | title TETRIS");
+	system("mode con cols=95 lines=50 | title TETRIS");
 	//=========================
 	struct Piece piece = { 0 }, p = { 0 }; //p means point, to test whether the piece is in the border.
 	struct Board board = { 0 };
 	int built = 0;
 	int queue[2] = { 0 };
+	int DebugMode = 0;
+	//To activate Debug mode, press [D].
 	createBuffer();
 	clearBuffer();
-	init(&board, queue);
+	init(&board, queue, &DebugMode);
 
 	for (; board.height < 20;) {
 		spawn(&piece, queue);
 		while (!(built)) {
 			clearBuffer();
 			update(&board, &piece);
-			render(board, piece, queue[1]);
+			render(board, piece, queue[1], DebugMode);
+			moveDown(&board, &p, &piece, &built, DebugMode);
 			moves(&board, &p, &piece, &built);
-			moveDown(&board, &p, &piece, &built);
 			checkHeight(&board);
 			flipBuffer();
 			Sleep(frameDelay);
@@ -43,13 +45,13 @@ int main() {
 		built = 0;
 	}
 	
-	release();
+	release(board);
 	releaseBuffer();
 
 	return 0;
 }
 
-void init(struct Board* board, int queue[2]) {
+void init(struct Board* board, int queue[2], int* DebugMode) {
 	char c;
 	int a = 1;
 	while (1) {
@@ -58,14 +60,18 @@ void init(struct Board* board, int queue[2]) {
 			draw(10, i + 8, TETRIS[i]);
 		}
 		if (a % 2 == 1) {
-			draw(18, LINE + 8, "Press [Enter] to Start...");
+			draw(17, LINE + 8, "Press [Enter] to Start...");
 		}
 		if (_kbhit()) {
 			c = _getch();
 			if (c == ENTER)
 				break;
+			else if (c == 100) { //'d'
+				*DebugMode = 1;
+				break;
+			}
 		}
-		Sleep(1000);
+		Sleep(800);
 		a++;
 		flipBuffer();
 	}
@@ -85,10 +91,9 @@ void update(struct Board* board, struct Piece* piece) {
 			}
 		}
 	}
-
 }
-void render(struct Board board, struct Piece piece, int queue1) {
-	draw(0, 30, "Press [Esc] to <Pause / Resume>");
+void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
+	draw(0, 31, "Press [Esc] / [Enter] to <Pause / Resume>");
 	for (int i = 0; i < 7; i++) {
 		draw(0, i, TETRIS[i]);
 	}
@@ -115,7 +120,7 @@ void render(struct Board board, struct Piece piece, int queue1) {
 	for (int i = 0; i < 12; i++) {
 		draw(i, 20 + LINE, "▩");
 	}
-	//=====
+	//===== queue preview
 	int qArr[4][4] = { 0 };
 	char qstr[4][4];
 	queuePiece(queue1, qArr);
@@ -141,6 +146,17 @@ void render(struct Board board, struct Piece piece, int queue1) {
 		}
 	}
 	//=====
+	if (DebugMode == 1) {
+		char str1[20];
+		draw(25, LINE, "Debug");
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 10; j++) {
+				sprintf_s(str1, sizeof(str1), "%d ", board.grid[i][j]);
+				draw(j + 25, i + LINE + 1, str1);
+			}
+		}
+	}
+	//=====
 	char score[20];
 	char level[20];
 	char line[20];
@@ -151,15 +167,24 @@ void render(struct Board board, struct Piece piece, int queue1) {
 	draw(15, 21, level);
 	draw(15, 22, line);
 }
-void release() {
+void release(struct Board board) {
 	char c;
 	while (1) {
 		clearBuffer();
 		for (int i = 0; i < 7; i++) {
 			draw(10, i + 8, TETRIS[i]);
 		}
-		draw(18, LINE + 8, "Press [SPACE] to Re-Start...");
-		draw(18, LINE + 9, "Press Any Key to Shut Down...");
+		draw(15, LINE + 8, "Press [SPACE] to Re-Start...");
+		draw(15, LINE + 9, "or Press Any Key to Shut Down...");
+		char score[20];
+		char level[20];
+		char line[20];
+		sprintf_s(score, sizeof(score), "score : %d", board.score);
+		sprintf_s(level, sizeof(level), "level : %d", board.level);
+		sprintf_s(line, sizeof(line), "line : %d", board.line);
+		draw(19, LINE + 15, score);
+		draw(19, LINE + 16, level);
+		draw(19, LINE + 17, line);
 		if (_kbhit()) {
 			c = _getch();
 			if (c == SPACE) {
@@ -167,7 +192,6 @@ void release() {
 			}
 			break;
 		}
-		//Sleep(1000);
 		flipBuffer();
 	}
 }
