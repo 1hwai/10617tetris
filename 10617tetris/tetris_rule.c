@@ -70,30 +70,30 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 				break;
 			}
 		}
-		else if (c == 32) {
+		else if (c == SPACE) {
 			draw(keyMessage[0], keyMessage[1], "SPACE");
 			while (valid(board, p, 0)) {
 				piece->y++;
 				p->y++;
-				board->score++;
+				board->score+=2;
 			}
 			piece->y--;
-			p->y--;
+			//p->y--;
 		}
-		else if (c == 27) {
+		if (c == ESC) {
 			while (1) {
 				if (_kbhit()) {
 					c = _getch();
-					if (c == 27) {
-						break;
+					if (c == ENTER) {
+						break; //return to the game
 					}
 				}
 			}
 		}
-
-		p->y++;
-		if (!(valid(board, p, 1))) {
-			if (colmove == 0) {
+		static int cnt = 0;
+		if (colmove == 0 || cnt == 50) {
+			p->y++;
+			if (!(valid(board, p, 1))) {
 				for (int i = 0; i < piece->size; i++) {
 					for (int j = 0; j < piece->size; j++) {
 						if (piece->shape[i][j] == 2) {
@@ -103,57 +103,66 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 				}
 				*built = 1;
 			}
-			else {
-				colmove = 0;
-			}
+			cnt = 0;
+		}
+		else {
+			cnt++;
 		}
 	}
 }
 
-void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built) {
+void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built, int DebugMode) {
 	static int dt = 0; //delta time;
-	dt++;
+	int limit = 30 - board->level;
+	if (limit < 2) {
+		limit = 2;
+	}
+	if (DebugMode == 1) {
+		char time[20];
+		sprintf_s(time, sizeof(time), "dt: %d  limit: %d", dt, limit);
+		draw(25, 30, time);
+	}
 	rmPiece(board, piece);
 	copyPiece(p, piece);
-	if (dt == 5 - board->level) {
+	if (dt >= limit) {
 		p->y++;
 		if (valid(board, p, 0)) {
 			piece->y++;
 		}
 		dt = 0;
 	}
-	p->y++;
-	if (!(valid(board, p, 1))) {
-
-		for (int i = 0; i < piece->size; i++) {
-			for (int j = 0; j < piece->size; j++) {
-				if (piece->shape[i][j] == 2) {
-					board->grid[piece->y + i][piece->x + j] = 1;
+	else {
+		dt++;
+	}
+	static int cnt = 0;
+	if (cnt == 50) {
+		p->y++;
+		if (!(valid(board, p, 1))) {
+			for (int i = 0; i < piece->size; i++) {
+				for (int j = 0; j < piece->size; j++) {
+					if (piece->shape[i][j] == 2) {
+						board->grid[piece->y + i][piece->x + j] = 1;
+					}
 				}
 			}
+			*built = 1;
 		}
-		*built = 1;
+		cnt = 0;
+	}
+	else {
+		cnt++;
 	}
 	board->level = (board->line + 10) / 10;
 }
 
 int valid(struct Board* board, struct Piece* p, int mode) {
 	int count = 0;
-	char str1[20];
-	draw(40, LINE, "Debug");
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 10; j++) {
-			sprintf_s(str1, sizeof(str1), "%d ", board->grid[i][j]);
-			draw(j + 40, i + LINE + 1, str1);
-		}
-	}
 	for (int i = 0; i < p->size; i++) {
 		for (int j = 0; j < p->size; j++) {
 			int x = p->x + j;
 			int y = p->y + i;
 			if (p->shape[i][j] == 2) {
 				if (board->grid[y][x] == 1) {
-					//draw(25, 20, "111");
 					return 0;
 				}
 				if (mode == 0) {
@@ -198,6 +207,7 @@ void checkHeight(struct Board* board) {
 					}
 				}
 				board->line++;
+				board->score += 120;
 			}
 		}
 		countOne = 0;
@@ -205,7 +215,7 @@ void checkHeight(struct Board* board) {
 	
 }
 
-int rotate(struct Piece* p) {
+void rotate(struct Piece* p) {
 	int temp;
 	for (int i = 0; i < p->size; i++) {
 		for (int j = i; j < p->size; j++) {
@@ -299,6 +309,13 @@ void spawn(struct Piece* piece, int queue[2]) {
 		break;
 	}
 	queue[1] = random(1, 7);
+	if (queue[1] == queue[0]) {
+		if (random(1, 5) != 3) {
+			do {
+				queue[1] = random(1, 7);
+			} while (queue[1] == queue[0]);
+		}
+	}
 }
 
 void queuePiece(int queue1, int qArr[][4]) {
