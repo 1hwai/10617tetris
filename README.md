@@ -7,7 +7,8 @@
   - v1.0
   - v1.1
   - Debug mode
-
+- 11/18
+  - Bug Fixed
 [주요파일]
 - main.c
 - tetris_rule.c
