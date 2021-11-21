@@ -4,6 +4,8 @@
 #define DOWN 80
 #define SPACE 32
 #define ENTER 13
+#define ALT 18
+#define ESC 27
 #define LINE 8
 
 #pragma once
@@ -24,9 +26,9 @@ void rmPiece(struct Board* board, struct Piece* piece);
 void copyPiece(struct Piece* p, struct Piece* piece);
 void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built);
 int valid(struct Board* board, struct Piece* p, int mode);
-void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built);
+void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built, int DebugMode);
 void checkHeight(struct Board* board);
-int rotate(struct Piece* p);
+void rotate(struct Piece* p);
 void spawn(struct Piece* piece, int queue[2]);
 void queuePiece(int queue1, int qArr[][4]);
 
@@ -39,5 +41,6 @@ struct Piece {
 
 struct Board {
 	int grid[20][10];
-	int height, score, level, line;
+	int height, level, line;
+	long long score;
 };
