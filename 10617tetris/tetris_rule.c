@@ -59,6 +59,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 						}
 					}
 				}
+				colmove = 1;
 				break;
 			case DOWN:
 				draw(keyMessage[0], keyMessage[1], "DOWN");
