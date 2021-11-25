@@ -36,8 +36,8 @@ int main() {
 			clearBuffer();
 			update(&board, &piece);
 			render(board, piece, queue[1], DebugMode);
-			moveDown(&board, &p, &piece, &built, DebugMode);
 			moves(&board, &p, &piece, &built);
+			moveDown(&board, &p, &piece, &built, DebugMode);
 			checkHeight(&board);
 			flipBuffer();
 			Sleep(frameDelay);
@@ -92,18 +92,16 @@ void update(struct Board* board, struct Piece* piece) {
 		}
 	}
 }
+
 void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	draw(0, 31, "Press [Esc] / [Enter] to <Pause / Resume>");
 	for (int i = 0; i < 7; i++) {
 		draw(0, i, TETRIS[i]);
 	}
-	char str[20];
 	for (int i = 0; i < 20; i++) {
 		draw(0, i + LINE, "▩");
 		draw(11, i + LINE, "▩");
 		for (int j = 0; j < 10; j++) {
-			//sprintf_s(str, sizeof(str), "%d ", board.grid[i][j]);
-			//draw(j + 1, i + LINE, str);
 			switch (board.grid[i][j]) {
 				case 0:
 					draw(j + 1, i + LINE, "  ");
@@ -120,9 +118,8 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	for (int i = 0; i < 12; i++) {
 		draw(i, 20 + LINE, "▩");
 	}
-	//===== queue preview
+	//Preview of Queue
 	int qArr[4][4] = { 0 };
-	char qstr[4][4];
 	queuePiece(queue1, qArr);
 	draw(15, LINE, "NEXT");
 	for (int i = 0; i < 6; i++) {
@@ -132,12 +129,12 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 			}
 			else {
 				switch (qArr[i - 1][j - 1]) {
-				case 0:
-					draw(j + 15, i + LINE + 1, "  ");
-					break;
-				case 2:
-					draw(j + 15, i + LINE + 1, "■");
-					break;
+					case 0:
+						draw(j + 15, i + LINE + 1, "  ");
+						break;
+					case 2:
+						draw(j + 15, i + LINE + 1, "■");
+						break;
 				}
 				if (queue1 == 1) {
 					draw(j + 15, 10, "  ");
@@ -147,12 +144,12 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	}
 	//=====
 	if (DebugMode == 1) {
-		char str1[20];
+		char Debug[20];
 		draw(25, LINE, "Debug");
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 10; j++) {
-				sprintf_s(str1, sizeof(str1), "%d ", board.grid[i][j]);
-				draw(j + 25, i + LINE + 1, str1);
+				sprintf_s(Debug, sizeof(Debug), "%d ", board.grid[i][j]);
+				draw(j + 25, i + LINE + 1, Debug);
 			}
 		}
 	}
@@ -167,8 +164,15 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	draw(15, 21, level);
 	draw(15, 22, line);
 }
+
 void release(struct Board board) {
 	char c;
+	char score[20];
+	char level[20];
+	char line[20];
+	sprintf_s(score, sizeof(score), "score : %d", board.score);
+	sprintf_s(level, sizeof(level), "level : %d", board.level);
+	sprintf_s(line, sizeof(line), "line : %d", board.line);
 	while (1) {
 		clearBuffer();
 		for (int i = 0; i < 7; i++) {
@@ -176,12 +180,6 @@ void release(struct Board board) {
 		}
 		draw(15, LINE + 8, "Press [SPACE] to Re-Start...");
 		draw(15, LINE + 9, "or Press Any Key to Shut Down...");
-		char score[20];
-		char level[20];
-		char line[20];
-		sprintf_s(score, sizeof(score), "score : %d", board.score);
-		sprintf_s(level, sizeof(level), "level : %d", board.level);
-		sprintf_s(line, sizeof(line), "line : %d", board.line);
 		draw(19, LINE + 15, score);
 		draw(19, LINE + 16, level);
 		draw(19, LINE + 17, line);
