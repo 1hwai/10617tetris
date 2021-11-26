@@ -4,6 +4,7 @@ void init(struct Board* board, int queue[2], int* DebugMode);
 void update(struct Board* board, struct Piece* piece);
 void render(struct Board board, struct Piece piece, int queue1, int DebugMode);
 void release(struct Board board);
+void textColor(int color);
 
 const char TETRIS[7][100] = {
 		"#### ##  ### ###  #### ##  ### ##     ####    ## ##",
@@ -37,7 +38,9 @@ int main() {
 			update(&board, &piece);
 			render(board, piece, queue[1], DebugMode);
 			moves(&board, &p, &piece, &built);
-			moveDown(&board, &p, &piece, &built, DebugMode);
+			if (!(built)) {	//하드드랍 시 moveDown을 실행하지 않고 바로 끝냄
+				moveDown(&board, &p, &piece, &built, DebugMode);
+			}
 			checkHeight(&board);
 			flipBuffer();
 			Sleep(frameDelay);
@@ -60,7 +63,7 @@ void init(struct Board* board, int queue[2], int* DebugMode) {
 			draw(10, i + 8, TETRIS[i]);
 		}
 		if (a % 2 == 1) {
-			draw(17, LINE + 8, "Press [Enter] to Start...");
+			draw(17, ROW + 8, "Press [Enter] to Start...");
 		}
 		if (_kbhit()) {
 			c = _getch();
@@ -94,50 +97,53 @@ void update(struct Board* board, struct Piece* piece) {
 }
 
 void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
-	draw(0, 31, "Press [Esc] / [Enter] to <Pause / Resume>");
+	draw(COL - 3, 31, "Press [Esc] / [Enter] to <Pause / Resume>");
 	for (int i = 0; i < 7; i++) {
-		draw(0, i, TETRIS[i]);
+		draw(COL - 5, i, TETRIS[i]);
 	}
 	for (int i = 0; i < 20; i++) {
-		draw(0, i + LINE, "▩");
-		draw(11, i + LINE, "▩");
+		draw(COL, i + ROW, "▩");
+		draw(11 + COL, i + ROW, "▩");
 		for (int j = 0; j < 10; j++) {
 			switch (board.grid[i][j]) {
 				case 0:
-					draw(j + 1, i + LINE, "  ");
+					draw(j + COL + 1, i + ROW, "  ");
 					break;
 				case 1:
-					draw(j + 1, i + LINE, "□");
+					draw(j + COL + 1, i + ROW, "□");
 					break;
 				case 2:
-					draw(j + 1, i + LINE, "■");
+					//====
+					textColor(piece.color);
+					draw(j + COL + 1, i + ROW, "■");
+					textColor(WHITE);
 					break;
 			}
 		}
 	}
 	for (int i = 0; i < 12; i++) {
-		draw(i, 20 + LINE, "▩");
+		draw(i + COL, 20 + ROW, "▩");
 	}
 	//Preview of Queue
 	int qArr[4][4] = { 0 };
 	queuePiece(queue1, qArr);
-	draw(15, LINE, "NEXT");
+	draw(15 + COL, ROW, "NEXT");
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
 			if (i == 0 || i == 5 || j == 0 || j == 5) {
-				draw(i + 15, j + LINE + 1, "▩");
+				draw(i + 15 + COL, j + ROW + 1, "▩");
 			}
 			else {
 				switch (qArr[i - 1][j - 1]) {
 					case 0:
-						draw(j + 15, i + LINE + 1, "  ");
+						draw(j + 15 + COL, i + ROW + 1, "  ");
 						break;
 					case 2:
-						draw(j + 15, i + LINE + 1, "■");
+						draw(j + 15 + COL, i + ROW + 1, "■");
 						break;
 				}
 				if (queue1 == 1) {
-					draw(j + 15, 10, "  ");
+					draw(j + 15 + COL, 10, "  ");
 				}
 			}
 		}
@@ -145,11 +151,11 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	//=====
 	if (DebugMode == 1) {
 		char Debug[20];
-		draw(25, LINE, "Debug");
+		draw(25 + COL, ROW, "Debug");
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 10; j++) {
 				sprintf_s(Debug, sizeof(Debug), "%d ", board.grid[i][j]);
-				draw(j + 25, i + LINE + 1, Debug);
+				draw(j + 25 + COL, i + ROW + 1, Debug);
 			}
 		}
 	}
@@ -160,9 +166,9 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	sprintf_s(score, sizeof(score), "score : %d", board.score);
 	sprintf_s(level, sizeof(level), "level : %d", board.level);
 	sprintf_s(line, sizeof(line), "line : %d", board.line);
-	draw(15, 20, score);
-	draw(15, 21, level);
-	draw(15, 22, line);
+	draw(15 + COL, 20, score);
+	draw(15 + COL, 21, level);
+	draw(15 + COL, 22, line);
 }
 
 void release(struct Board board) {
@@ -178,11 +184,11 @@ void release(struct Board board) {
 		for (int i = 0; i < 7; i++) {
 			draw(10, i + 8, TETRIS[i]);
 		}
-		draw(15, LINE + 8, "Press [SPACE] to Re-Start...");
-		draw(15, LINE + 9, "or Press Any Key to Shut Down...");
-		draw(19, LINE + 15, score);
-		draw(19, LINE + 16, level);
-		draw(19, LINE + 17, line);
+		draw(15, ROW + 8, "Press [SPACE] to Re-Start...");
+		draw(15, ROW + 9, "or Press Any Key to Shut Down...");
+		draw(19, ROW + 15, score);
+		draw(19, ROW + 16, level);
+		draw(19, ROW + 17, line);
 		if (_kbhit()) {
 			c = _getch();
 			if (c == SPACE) {
@@ -192,4 +198,8 @@ void release(struct Board board) {
 		}
 		flipBuffer();
 	}
+}
+
+void textColor(int color) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
