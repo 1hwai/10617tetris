@@ -9,6 +9,12 @@
   - Debug mode
 - 11/18
   - Bug Fixed
+- 11/26
+  - Bug Fixed
+  - 드랍 관련 수정
+  - 디자인 변경
+  - 색상 시스템 추가(작동 X)
+  - 
 [주요파일]
 - main.c
 - tetris_rule.c
