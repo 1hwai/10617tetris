@@ -17,7 +17,7 @@ const char TETRIS[7][100] = {
 };
 
 int main() {
-	const int fps = 120;
+	const int fps = 60;
 	const int frameDelay = 1000 / fps;
 	system("mode con cols=95 lines=50 | title TETRIS");
 	//=========================
@@ -79,8 +79,9 @@ void init(struct Board* board, int queue[2], int* DebugMode) {
 		flipBuffer();
 	}
 
+	PlaySound(TEXT(TETRIS_BGM), NULL, SND_ASYNC | SND_LOOP);
 	board->height = 0;
-	board->level = 1;
+	board->level = 0;
 	board->line = 0;
 	board->score = 0;
 	queue[1] = random(1, 7);
@@ -163,7 +164,7 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 	char score[20];
 	char level[20];
 	char line[20];
-	sprintf_s(score, sizeof(score), "score : %d", board.score);
+	sprintf_s(score, sizeof(score), "score : %I64d", board.score);
 	sprintf_s(level, sizeof(level), "level : %d", board.level);
 	sprintf_s(line, sizeof(line), "line : %d", board.line);
 	draw(15 + COL, 20, score);
@@ -176,7 +177,7 @@ void release(struct Board board) {
 	char score[20];
 	char level[20];
 	char line[20];
-	sprintf_s(score, sizeof(score), "score : %d", board.score);
+	sprintf_s(score, sizeof(score), "score : %I64d", board.score);
 	sprintf_s(level, sizeof(level), "level : %d", board.level);
 	sprintf_s(line, sizeof(line), "line : %d", board.line);
 	while (1) {
@@ -192,12 +193,14 @@ void release(struct Board board) {
 		if (_kbhit()) {
 			c = _getch();
 			if (c == SPACE) {
+				PlaySound(NULL, 0, 0);
 				main();
 			}
 			break;
 		}
 		flipBuffer();
 	}
+	PlaySound(NULL, 0, 0);
 }
 
 void textColor(int color) {
