@@ -27,7 +27,7 @@ int colmove = 0;
 void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built) {
 	char c;
 	static int cnt = 0;
-	const int KEY[2] = { 15 + COL, 20 + ROW - 1 };
+	const int KEY[2] = { 15 + COL, 19 + ROW };
 	//colmove
 	//x축 움직임 감지 시 1, 아니면 0
 	//벽에 붙는 거 방지용
@@ -65,6 +65,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 						}
 					}
 					colmove = 1;
+					cnt = 0;
 					break;
 				case DOWN:
 					draw(KEY[0], KEY[1], "DOWN");
@@ -120,13 +121,37 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 
 void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built, int DebugMode) {
 	static int dt = 0; //delta time;
-	int limit = 30 - board->level;
-	if (limit < 2) {
-		limit = 2;
+	static int limit = 48;
+	if (board->level <= 8) {
+		limit = 48 - board->level * 5;
 	}
+	else {
+		switch (board->level) {
+		case 9:
+			limit = 6;
+			break;
+		case 10:
+			limit = 5;
+			break;
+		case 13:
+			limit = 4;
+			break;
+		case 16:
+			limit = 3;
+			break;
+		case 19:
+			limit = 2;
+			break;
+		case 29:
+			limit = 1;
+		}
+	}
+	//9단계+로는 범위가 아닌 switch case 이므로
+	//테스트 시 9, 10, 13, 16, 19, 29 단계로 맞출 것을 권장.
+	//단계 설정 시 board->line을 (level - 1) * 10으로 맞출 것을 권장.
 	if (DebugMode == 1) {
 		char time[20];
-		sprintf_s(time, sizeof(time), "dt: %d  limit: %d", dt, limit);
+		sprintf_s(time, sizeof(time), "dt: %I32d  limit: %I32d", dt, limit);
 		draw(25, 30, time);
 	}
 	rmPiece(board, piece);
@@ -221,6 +246,7 @@ void checkHeight(struct Board* board) {
 				}
 				board->line++;
 				board->score += 120;
+				Beep(410, 500);
 			}
 		}
 		countOne = 0;
@@ -237,7 +263,7 @@ void rotate(struct Piece* p) {
 			p->shape[j][i] = temp;
 		}
 	}
-	int tArr[4];
+	int tArr[4] = { 0 };
 	for (int i = 0, j; i < p->size; i++) {
 		for (j = 0; j < p->size; j++) {
 			tArr[p->size - j - 1] = p->shape[i][j];
