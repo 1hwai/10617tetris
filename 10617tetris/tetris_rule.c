@@ -74,6 +74,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 						piece->y++;
 						board->score++;
 					}
+					board->score += board->level * 2;
 					break;
 			}
 		}
@@ -84,6 +85,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 				p->y++;
 				board->score+=2;
 			}
+			board->score += board->level * 2;
 			piece->y--;
 			cnt = 40; //하드드랍으로 바로 끝냄
 			//p->y--;
@@ -166,8 +168,10 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* bu
 	else {
 		dt++;
 	}
-
 	static int cnt = 0;
+	if (colmove == 1) {
+		cnt == 30;
+	}
 	if (colmove == 0 && cnt == 50) {
 		p->y++;
 		if (!(valid(board, p, 1))) { //더 이상 움직이는 게 불가능하다면
@@ -245,8 +249,7 @@ void checkHeight(struct Board* board) {
 					}
 				}
 				board->line++;
-				board->score += 120;
-				Beep(410, 500);
+				board->score += 120 + (board->level - 1) * 10;
 			}
 		}
 		countOne = 0;
