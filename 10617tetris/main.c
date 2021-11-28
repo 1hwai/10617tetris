@@ -179,25 +179,30 @@ void release(struct Board board) {
 	char line[20];
 	sprintf_s(score, sizeof(score), "score : %I64d", board.score);
 	sprintf_s(level, sizeof(level), "level : %d", board.level);
-	sprintf_s(line, sizeof(line), "line : %d", board.line);
+	sprintf_s(line, sizeof(line), "line  : %d", board.line);
+	int a = 0;
 	while (1) {
 		clearBuffer();
 		for (int i = 0; i < 7; i++) {
 			draw(10, i + 8, TETRIS[i]);
 		}
-		draw(15, ROW + 8, "Press [SPACE] to Re-Start...");
-		draw(15, ROW + 9, "or Press Any Key to Shut Down...");
 		draw(19, ROW + 15, score);
 		draw(19, ROW + 16, level);
 		draw(19, ROW + 17, line);
-		if (_kbhit()) {
-			c = _getch();
-			if (c == SPACE) {
-				PlaySound(NULL, 0, 0);
-				main();
+		if (a > 8) {
+			draw(15, ROW + 8, "Press [SPACE] to Re-Start...");
+			draw(15, ROW + 9, "or Press Any Key to Shut Down...");
+			if (_kbhit()) {
+				c = _getch();
+				if (c == SPACE) {
+					PlaySound(NULL, 0, 0);
+					main();
+				}
+				break;
 			}
-			break;
 		}
+		a++;
+		Sleep(500);
 		flipBuffer();
 	}
 	PlaySound(NULL, 0, 0);
