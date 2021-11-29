@@ -38,44 +38,44 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 		if (c == -32) {
 			c = _getch();
 			switch (c) {
-				case LEFT:
-					draw(KEY[0], KEY[1], "LEFT");
-					p->x--;
-					if (valid(board, p, 0)) {
-						piece->x--;
-					}
-					colmove = 1;
-					break;
-				case RIGHT:
-					draw(KEY[0], KEY[1], "RIGHT");
-					p->x++;
-					if (valid(board, p, 0)) {
-						piece->x++;
-					}
-					colmove = 1;
-					break;
-				case UP:
-					draw(KEY[0], KEY[1], "UP");
-					rotate(p);
-					if (valid(board, p, 0)) {
-						for (int i = 0; i < piece->size; i++) {
-							for (int j = 0; j < piece->size; j++) {
-								piece->shape[i][j] = p->shape[i][j];
-							}
+			case LEFT:
+				draw(KEY[0], KEY[1], "LEFT");
+				p->x--;
+				if (valid(board, p, 0)) {
+					piece->x--;
+				}
+				colmove = 1;
+				break;
+			case RIGHT:
+				draw(KEY[0], KEY[1], "RIGHT");
+				p->x++;
+				if (valid(board, p, 0)) {
+					piece->x++;
+				}
+				colmove = 1;
+				break;
+			case UP:
+				draw(KEY[0], KEY[1], "UP");
+				rotate(p);
+				if (valid(board, p, 0)) {
+					for (int i = 0; i < piece->size; i++) {
+						for (int j = 0; j < piece->size; j++) {
+							piece->shape[i][j] = p->shape[i][j];
 						}
 					}
-					colmove = 1;
-					cnt = 0;
-					break;
-				case DOWN:
-					draw(KEY[0], KEY[1], "DOWN");
-					p->y++;
-					if (valid(board, p, 0)) {
-						piece->y++;
-						board->score++;
-					}
-					board->score += (long long)board->level * 2;
-					break;
+				}
+				colmove = 1;
+				cnt = 0;
+				break;
+			case DOWN:
+				draw(KEY[0], KEY[1], "DOWN");
+				p->y++;
+				if (valid(board, p, 0)) {
+					piece->y++;
+					board->score++;
+				}
+				board->score += (long long)board->level * 2;
+				break;
 			}
 		}
 		else if (c == SPACE) {
@@ -83,7 +83,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 			while (valid(board, p, 0)) {
 				piece->y++;
 				p->y++;
-				board->score+=2;
+				board->score += 2;
 			}
 			board->score += (long long)board->level * 2;
 			piece->y--;
@@ -170,7 +170,7 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* bu
 	}
 	static int cnt = 0;
 	if (colmove == 1) {
-		cnt == 30;
+		cnt = 30;
 	}
 	if (colmove == 0 && cnt == 50) {
 		p->y++;
@@ -254,7 +254,7 @@ void checkHeight(struct Board* board) {
 		}
 		countOne = 0;
 	}
-	
+
 }
 
 void rotate(struct Piece* p) {
@@ -369,46 +369,46 @@ void spawn(struct Piece* piece, int queue[2]) {
 
 void queuePiece(int queue1, int qArr[][4]) {
 	switch (queue1) {
-		case 1: //I    row col
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			qArr[1][2] = 2;
-			qArr[1][3] = 2;
-		case 2:
-			qArr[0][0] = 2;
-			qArr[0][1] = 2;
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			break;
-		case 3: //J
-			qArr[0][0] = 2;
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			qArr[1][2] = 2;
-			break;
-		case 4: //L
-			qArr[0][2] = 2;
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			qArr[1][2] = 2;
-			break;
-		case 5: //S
-			qArr[0][1] = 2;
-			qArr[0][2] = 2;
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			break;
-		case 6: //2
-			qArr[0][0] = 2;
-			qArr[0][1] = 2;
-			qArr[1][1] = 2;
-			qArr[1][2] = 2;
-			break;
-		case 7: //T
-			qArr[0][1] = 2;
-			qArr[1][0] = 2;
-			qArr[1][1] = 2;
-			qArr[1][2] = 2;
-			break;
+	case 1: //I    row col
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		qArr[1][2] = 2;
+		qArr[1][3] = 2;
+	case 2:
+		qArr[0][0] = 2;
+		qArr[0][1] = 2;
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		break;
+	case 3: //J
+		qArr[0][0] = 2;
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		qArr[1][2] = 2;
+		break;
+	case 4: //L
+		qArr[0][2] = 2;
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		qArr[1][2] = 2;
+		break;
+	case 5: //S
+		qArr[0][1] = 2;
+		qArr[0][2] = 2;
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		break;
+	case 6: //2
+		qArr[0][0] = 2;
+		qArr[0][1] = 2;
+		qArr[1][1] = 2;
+		qArr[1][2] = 2;
+		break;
+	case 7: //T
+		qArr[0][1] = 2;
+		qArr[1][0] = 2;
+		qArr[1][1] = 2;
+		qArr[1][2] = 2;
+		break;
 	}
 }
