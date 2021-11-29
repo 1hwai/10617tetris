@@ -4,7 +4,6 @@ void init(struct Board* board, int queue[2], int* DebugMode);
 void update(struct Board* board, struct Piece* piece);
 void render(struct Board board, struct Piece piece, int queue1, int DebugMode);
 void release(struct Board board);
-void textColor(int color);
 
 const char TETRIS[7][100] = {
 		"#### ##  ### ###  #### ##  ### ##     ####    ## ##",
@@ -47,7 +46,7 @@ int main() {
 		}
 		built = 0;
 	}
-	
+
 	release(board);
 	releaseBuffer();
 
@@ -107,18 +106,18 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 		draw(11 + COL, i + ROW, "▩");
 		for (int j = 0; j < 10; j++) {
 			switch (board.grid[i][j]) {
-				case 0:
-					draw(j + COL + 1, i + ROW, "  ");
-					break;
-				case 1:
-					draw(j + COL + 1, i + ROW, "□");
-					break;
-				case 2:
-					//====
-					textColor(piece.color);
-					draw(j + COL + 1, i + ROW, "■");
-					textColor(WHITE);
-					break;
+			case 0:
+				draw(j + COL + 1, i + ROW, "  ");
+				break;
+			case 1:
+				draw(j + COL + 1, i + ROW, "□");
+				break;
+			case 2:
+				//====
+				textColor(piece.color);
+				draw(j + COL + 1, i + ROW, "■");
+				textColor(WHITE);
+				break;
 			}
 		}
 	}
@@ -136,12 +135,12 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 			}
 			else {
 				switch (qArr[i - 1][j - 1]) {
-					case 0:
-						draw(j + 15 + COL, i + ROW + 1, "  ");
-						break;
-					case 2:
-						draw(j + 15 + COL, i + ROW + 1, "■");
-						break;
+				case 0:
+					draw(j + 15 + COL, i + ROW + 1, "  ");
+					break;
+				case 2:
+					draw(j + 15 + COL, i + ROW + 1, "■");
+					break;
 				}
 				if (queue1 == 1) {
 					draw(j + 15 + COL, 10, "  ");
@@ -206,8 +205,4 @@ void release(struct Board board) {
 		flipBuffer();
 	}
 	PlaySound(NULL, 0, 0);
-}
-
-void textColor(int color) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
