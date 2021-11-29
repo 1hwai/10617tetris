@@ -43,7 +43,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #pragma comment (lib, "winmm.lib")
-#include <mmsystem.h>;
+#include <mmsystem.h>
 
 void createBuffer();
 void flipBuffer();
@@ -51,6 +51,7 @@ void clearBuffer();
 void releaseBuffer();
 void draw(int x, int y, const char* string);
 int random(int from, int to);
+void textColor(int color);
 //=====
 void rmPiece(struct Board* board, struct Piece* piece);
 void copyPiece(struct Piece* p, struct Piece* piece);
