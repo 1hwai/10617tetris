@@ -43,8 +43,14 @@ void releaseBuffer()
 	CloseHandle(hBuffer[1]);
 }
 
+//테트로미노 종류
 int random(int from, int to)
 {
 	srand(time(NULL));
 	return rand() % (to + 1 - from) + from;
+}
+
+void textColor(int color) {
+	SetConsoleTextAttribute(hBuffer[0], color);
+	SetConsoleTextAttribute(hBuffer[1], color);
 }
