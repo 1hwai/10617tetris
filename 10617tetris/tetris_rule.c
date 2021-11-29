@@ -74,7 +74,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 						piece->y++;
 						board->score++;
 					}
-					board->score += board->level * 2;
+					board->score += (long long)board->level * 2;
 					break;
 			}
 		}
@@ -85,7 +85,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 				p->y++;
 				board->score+=2;
 			}
-			board->score += board->level * 2;
+			board->score += (long long)board->level * 2;
 			piece->y--;
 			cnt = 40; //하드드랍으로 바로 끝냄
 			//p->y--;
@@ -249,7 +249,7 @@ void checkHeight(struct Board* board) {
 					}
 				}
 				board->line++;
-				board->score += 120 + (board->level - 1) * 10;
+				board->score += 120 + ((long long)board->level - 1) * 10;
 			}
 		}
 		countOne = 0;
