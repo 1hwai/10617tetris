@@ -11,7 +11,8 @@
 
 //==== Tetris Piece color setting
 #define BLUE 1
-#define GREEN 2#define LEFT 75
+#define GREEN 2
+#define LEFT 75
 #define UP 72
 #define RIGHT 77
 #define DOWN 80
