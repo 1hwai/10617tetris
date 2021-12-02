@@ -88,7 +88,6 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 			board->score += (long long)board->level * 2;
 			piece->y--;
 			cnt = 40; //하드드랍으로 바로 끝냄
-			//p->y--;
 		}
 		if (c == ESC) {
 			while (1) {
@@ -254,7 +253,6 @@ void checkHeight(struct Board* board) {
 		}
 		countOne = 0;
 	}
-
 }
 
 void rotate(struct Piece* p) {
@@ -295,13 +293,6 @@ void spawn(struct Piece* piece, int queue[2]) {
 		piece->size = 4;
 		piece->color = SKYBLUE;
 		break;
-		//0 1 2 3 4
-		//ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-		//     ㅁㅁㅁㅁ
-		//       ㅁ
-		//       ㅁ
-		//       ㅁ
-		//       ㅁ
 	case 2: //O
 		piece->x = 4;
 		piece->shape[0][0] = 2;
@@ -311,11 +302,6 @@ void spawn(struct Piece* piece, int queue[2]) {
 		piece->size = 2;
 		piece->color = YELLOW;
 		break;
-		//0 1 2 3 4
-		//ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ
-		//       ㅁㅁㅁㅁ
-		//       ㅁㅁ
-		//       ㅁㅁ
 	case 3: //J
 		piece->shape[0][0] = 2;
 		piece->shape[1][0] = 2;
