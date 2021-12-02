@@ -189,15 +189,17 @@ void release(struct Board board) {
 		draw(19, ROW + 16, level);
 		draw(19, ROW + 17, line);
 		if (a > 8) {
-			draw(15, ROW + 8, "Press [SPACE] to Re-Start...");
-			draw(15, ROW + 9, "or Press Any Key to Shut Down...");
+			draw(15, ROW + 8, "Press [ENTER] to Re-Start...");
+			draw(15, ROW + 9, "or Press [ESC] to Shut Down...");
 			if (_kbhit()) {
 				c = _getch();
-				if (c == SPACE) {
+				if (c == ENTER) {
 					PlaySound(NULL, 0, 0);
 					main();
 				}
-				break;
+				else if (c == ESC) {
+					break;
+				}
 			}
 		}
 		a++;
