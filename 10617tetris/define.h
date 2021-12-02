@@ -12,20 +12,6 @@
 //==== Tetris Piece color setting
 #define BLUE 1
 #define GREEN 2
-#define LEFT 75
-#define UP 72
-#define RIGHT 77
-#define DOWN 80
-#define SPACE 32
-#define ENTER 13
-#define ALT 18
-#define ESC 27
-#define ROW 8
-#define COL 15
-
-//==== Tetris Piece color setting
-#define BLUE 1
-#define GREEN 2
 #define SKYBLUE 3
 #define RED 4
 #define PURPLE 5
