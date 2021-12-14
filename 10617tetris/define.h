@@ -41,9 +41,9 @@ void textColor(int color);
 //=====
 void rmPiece(struct Board* board, struct Piece* piece);
 void copyPiece(struct Piece* p, struct Piece* piece);
-void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built);
+void moves(struct Board* board, struct Piece* p, struct Piece* piece);
 int valid(struct Board* board, struct Piece* p, int mode);
-void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built, int DebugMode);
+void moveDown(struct Board* board, struct Piece* p, struct Piece* piece);
 void checkHeight(struct Board* board);
 void rotate(struct Piece* p);
 void spawn(struct Piece* piece, int queue[2]);
@@ -60,4 +60,6 @@ struct Board {
 	int grid[20][10];
 	int height, level, line;
 	long long score;
+	int queue[2];
+	int built, DebugMode;
 };
