@@ -24,11 +24,10 @@ void copyPiece(struct Piece* p, struct Piece* piece) {
 
 int colmove = 0;
 
-void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built) {
+void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 	char c;
 	static int cnt = 0;
 	const int KEY[2] = { 15 + COL, 19 + ROW };
-	//colmove
 	//x축 움직임 감지 시 1, 아니면 0
 	//벽에 붙는 거 방지용
 	if (_kbhit()) {
@@ -91,9 +90,11 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 		}
 		if (c == ESC) {
 			while (1) {
+				PlaySound(NULL, 0, 0);
 				if (_kbhit()) {
 					c = _getch();
 					if (c == ENTER) {
+						PlaySound(TEXT(TETRIS_BGM), NULL, SND_ASYNC | SND_LOOP);
 						break; //return to the game
 					}
 				}
@@ -109,7 +110,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 						}
 					}
 				}
-				*built = 1;
+				board->built = 1;
 			}
 			cnt = 0;
 		}
@@ -120,7 +121,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece, int* built
 	}
 }
 
-void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* built, int DebugMode) {
+void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 	static int dt = 0; //delta time;
 	static int limit = 48;
 	if (board->level <= 8) {
@@ -150,7 +151,7 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* bu
 	//9단계+로는 범위가 아닌 switch case 이므로
 	//테스트 시 9, 10, 13, 16, 19, 29 단계로 맞출 것을 권장.
 	//단계 설정 시 board->line을 (level - 1) * 10으로 맞출 것을 권장.
-	if (DebugMode == 1) {
+	if (board->DebugMode == 1) {
 		char time[20];
 		sprintf_s(time, sizeof(time), "dt: %I32d  limit: %I32d", dt, limit);
 		draw(25, 30, time);
@@ -181,7 +182,7 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece, int* bu
 					}
 				}
 			}
-			*built = 1;
+			board->built = 1;
 		}
 		cnt = 0;
 	}
