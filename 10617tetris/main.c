@@ -1,8 +1,8 @@
 #include "Define.h"
 
-void init(struct Board* board, int queue[2], int* DebugMode);
+void init(struct Board* board);
 void update(struct Board* board, struct Piece* piece);
-void render(struct Board board, struct Piece piece, int queue1, int DebugMode);
+void render(struct Board board, struct Piece piece);
 void release(struct Board board);
 
 const char TETRIS[7][100] = {
@@ -22,29 +22,26 @@ int main() {
 	//=========================
 	struct Piece piece = { 0 }, p = { 0 }; //p means point, to test whether the piece is in the border.
 	struct Board board = { 0 };
-	int built = 0;
-	int queue[2] = { 0 };
-	int DebugMode = 0;
 	//To activate Debug mode, press [D].
 	createBuffer();
 	clearBuffer();
-	init(&board, queue, &DebugMode);
+	init(&board);
 
-	for (; board.height < 20;) {
-		spawn(&piece, queue);
-		while (!(built)) {
+	while (board.height < 20) {
+		spawn(&piece, &board.queue);
+		while (!(board.built)) {
 			clearBuffer();
 			update(&board, &piece);
-			render(board, piece, queue[1], DebugMode);
-			moves(&board, &p, &piece, &built);
-			if (!(built)) {	//하드드랍 시 moveDown을 실행하지 않고 바로 끝냄
-				moveDown(&board, &p, &piece, &built, DebugMode);
+			render(board, piece);
+			moves(&board, &p, &piece);
+			if (!(board.built)) {	//하드드랍 시 moveDown을 실행하지 않고 바로 끝냄
+				moveDown(&board, &p, &piece);
 			}
 			checkHeight(&board);
 			flipBuffer();
 			Sleep(frameDelay);
 		}
-		built = 0;
+		board.built = 0;
 	}
 
 	release(board);
@@ -53,9 +50,10 @@ int main() {
 	return 0;
 }
 
-void init(struct Board* board, int queue[2], int* DebugMode) {
+void init(struct Board* board) {
 	char c;
 	int a = 1;
+	board->DebugMode = 0;
 	while (1) {
 		clearBuffer();
 		for (int i = 0; i < 7; i++) {
@@ -69,7 +67,7 @@ void init(struct Board* board, int queue[2], int* DebugMode) {
 			if (c == ENTER)
 				break;
 			else if (c == 100) { //'d'
-				*DebugMode = 1;
+				board->DebugMode = 1;
 				break;
 			}
 		}
@@ -79,11 +77,15 @@ void init(struct Board* board, int queue[2], int* DebugMode) {
 	}
 
 	PlaySound(TEXT(TETRIS_BGM), NULL, SND_ASYNC | SND_LOOP);
+
 	board->height = 0;
 	board->level = 0;
 	board->line = 0;
 	board->score = 0;
-	queue[1] = random(1, 7);
+
+	board->built = 0;
+
+	board->queue[1] = random(1, 7);
 	flipBuffer();
 }
 void update(struct Board* board, struct Piece* piece) {
@@ -96,14 +98,14 @@ void update(struct Board* board, struct Piece* piece) {
 	}
 }
 
-void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
+void render(struct Board board, struct Piece piece) {
 	draw(COL - 3, 31, "Press [Esc] / [Enter] to <Pause / Resume>");
 	for (int i = 0; i < 7; i++) {
 		draw(COL - 5, i, TETRIS[i]);
 	}
 	for (int i = 0; i < 20; i++) {
 		draw(COL, i + ROW, "▩");
-		draw(11 + COL, i + ROW, "▩");
+		draw(COL + 11, i + ROW, "▩");
 		for (int j = 0; j < 10; j++) {
 			switch (board.grid[i][j]) {
 			case 0:
@@ -122,11 +124,11 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 		}
 	}
 	for (int i = 0; i < 12; i++) {
-		draw(i + COL, 20 + ROW, "▩");
+		draw(COL + i, 20 + ROW, "▩");
 	}
 	//Preview of Queue
 	int qArr[4][4] = { 0 };
-	queuePiece(queue1, qArr);
+	queuePiece(board.queue[1], qArr);
 	draw(15 + COL, ROW, "NEXT");
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
@@ -142,14 +144,14 @@ void render(struct Board board, struct Piece piece, int queue1, int DebugMode) {
 					draw(j + 15 + COL, i + ROW + 1, "■");
 					break;
 				}
-				if (queue1 == 1) {
+				if (board.queue[1] == 1) {
 					draw(j + 15 + COL, 10, "  ");
 				}
 			}
 		}
 	}
 	//=====
-	if (DebugMode == 1) {
+	if (board.DebugMode == 1) {
 		char Debug[20];
 		draw(25 + COL, ROW, "Debug");
 		for (int i = 0; i < 20; i++) {
