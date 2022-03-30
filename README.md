@@ -1,4 +1,7 @@
 # 10617 C 프로젝트 - 테트리스
+
+# 추후 코드 리팩토링 예정됨
+# The code will be refactored in the near future.
 [타임라인]
 - 11/11 쌓기 구현
 - 11/12 회전 구현
