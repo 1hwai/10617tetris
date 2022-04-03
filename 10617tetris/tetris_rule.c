@@ -28,8 +28,8 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 	char c;
 	static int cnt = 0;
 	const int KEY[2] = { 15 + COL, 19 + ROW };
-	//xì¶• ì›€ì§ì„ ê°ì§€ ì‹œ 1, ì•„ë‹ˆë©´ 0
-	//ë²½ì— ë¶™ëŠ” ê±° ë°©ì§€ìš©
+	//xÃà ¿òÁ÷ÀÓ °¨Áö ½Ã 1, ¾Æ´Ï¸é 0
+	//º®¿¡ ºÙ´Â °Å ¹æÁö¿ë
 	if (_kbhit()) {
 		rmPiece(board, piece);
 		copyPiece(p, piece);
@@ -86,7 +86,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 			}
 			board->score += (long long)board->level * 2;
 			piece->y--;
-			cnt = 40; //í•˜ë“œë“œëìœ¼ë¡œ ë°”ë¡œ ëëƒ„
+			cnt = 40; //ÇÏµåµå¶øÀ¸·Î ¹Ù·Î ³¡³¿
 		}
 		if (c == ESC) {
 			while (1) {
@@ -102,7 +102,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 		}
 		if (colmove == 0 && cnt >= 40) {
 			p->y++;
-			if (!(valid(board, p, 1))) { //ë” ì´ìƒ ì›€ì§ì´ëŠ” ê²Œ ë¶ˆê°€ëŠ¥í•˜ë‹¤ë©´
+			if (!(valid(board, p, 1))) { //´õ ÀÌ»ó ¿òÁ÷ÀÌ´Â °Ô ºÒ°¡´ÉÇÏ´Ù¸é
 				for (int i = 0; i < piece->size; i++) {
 					for (int j = 0; j < piece->size; j++) {
 						if (piece->shape[i][j] == 2) {
@@ -148,9 +148,9 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 			limit = 1;
 		}
 	}
-	//9ë‹¨ê³„+ë¡œëŠ” ë²”ìœ„ê°€ ì•„ë‹Œ switch case ì´ë¯€ë¡œ
-	//í…ŒìŠ¤íŠ¸ ì‹œ 9, 10, 13, 16, 19, 29 ë‹¨ê³„ë¡œ ë§ì¶œ ê²ƒì„ ê¶Œì¥.
-	//ë‹¨ê³„ ì„¤ì • ì‹œ board->lineì„ (level - 1) * 10ìœ¼ë¡œ ë§ì¶œ ê²ƒì„ ê¶Œì¥.
+	//9´Ü°è+·Î´Â ¹üÀ§°¡ ¾Æ´Ñ switch case ÀÌ¹Ç·Î
+	//Å×½ºÆ® ½Ã 9, 10, 13, 16, 19, 29 ´Ü°è·Î ¸ÂÃâ °ÍÀ» ±ÇÀå.
+	//´Ü°è ¼³Á¤ ½Ã board->lineÀ» (level - 1) * 10À¸·Î ¸ÂÃâ °ÍÀ» ±ÇÀå.
 	if (board->DebugMode == 1) {
 		char time[20];
 		sprintf_s(time, sizeof(time), "dt: %I32d  limit: %I32d", dt, limit);
@@ -174,7 +174,7 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 	}
 	if (colmove == 0 && cnt == 50) {
 		p->y++;
-		if (!(valid(board, p, 1))) { //ë” ì´ìƒ ì›€ì§ì´ëŠ” ê²Œ ë¶ˆê°€ëŠ¥í•˜ë‹¤ë©´
+		if (!(valid(board, p, 1))) { //´õ ÀÌ»ó ¿òÁ÷ÀÌ´Â °Ô ºÒ°¡´ÉÇÏ´Ù¸é
 			for (int i = 0; i < piece->size; i++) {
 				for (int j = 0; j < piece->size; j++) {
 					if (piece->shape[i][j] == 2) {
