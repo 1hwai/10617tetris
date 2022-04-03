@@ -21,6 +21,9 @@
     <ClCompile Include="define.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="tetris_rule.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define.h">
