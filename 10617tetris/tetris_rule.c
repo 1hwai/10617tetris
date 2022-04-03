@@ -1,33 +1,28 @@
 #include "Define.h"
 
-void rmPiece(struct Board* board, struct Piece* piece) {
-	for (int i = 0; i < piece->size; i++) {
-		for (int j = 0; j < piece->size; j++) {
-			if (piece->shape[i][j] == 2) {
+short colmove = 0;
+const int POSITION[2] = { COL + 15, ROW + 19 };
+
+void rmPiece(Board* board, Piece* piece) {
+	for (int i = 0; i < piece->size; i++)
+		for (int j = 0; j < piece->size; j++)
+			if (piece->shape[i][j] == 2)
 				board->grid[piece->y + i][piece->x + j] = 0;
-			}
-		}
-	}
 }
 
-void copyPiece(struct Piece* p, struct Piece* piece) {
+void copyPiece(Piece* p, Piece* piece) {
 	//copying piece members to p
 	p->x = piece->x;
 	p->y = piece->y;
 	p->size = piece->size;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
 			p->shape[i][j] = piece->shape[i][j];
-		}
-	}
 }
 
-int colmove = 0;
-
-void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
+void moves(Board* board, Piece* p, Piece* piece) {
 	char c;
 	static int cnt = 0;
-	const int KEY[2] = { 15 + COL, 19 + ROW };
 	//x축 움직임 감지 시 1, 아니면 0
 	//벽에 붙는 거 방지용
 	if (_kbhit()) {
@@ -38,7 +33,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 			c = _getch();
 			switch (c) {
 			case LEFT:
-				draw(KEY[0], KEY[1], "LEFT");
+				draw(POSITION[0], POSITION[1], "LEFT");
 				p->x--;
 				if (valid(board, p, 0)) {
 					piece->x--;
@@ -46,7 +41,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 				colmove = 1;
 				break;
 			case RIGHT:
-				draw(KEY[0], KEY[1], "RIGHT");
+				draw(POSITION[0], POSITION[1], "RIGHT");
 				p->x++;
 				if (valid(board, p, 0)) {
 					piece->x++;
@@ -54,7 +49,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 				colmove = 1;
 				break;
 			case UP:
-				draw(KEY[0], KEY[1], "UP");
+				draw(POSITION[0], POSITION[1], "UP");
 				rotate(p);
 				if (valid(board, p, 0)) {
 					for (int i = 0; i < piece->size; i++) {
@@ -67,7 +62,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 				cnt = 0;
 				break;
 			case DOWN:
-				draw(KEY[0], KEY[1], "DOWN");
+				draw(POSITION[0], POSITION[1], "DOWN");
 				p->y++;
 				if (valid(board, p, 0)) {
 					piece->y++;
@@ -78,7 +73,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 			}
 		}
 		else if (c == SPACE) {
-			draw(KEY[0], KEY[1], "SPACE");
+			draw(POSITION[0], POSITION[1], "SPACE");
 			while (valid(board, p, 0)) {
 				piece->y++;
 				p->y++;
@@ -100,7 +95,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 				}
 			}
 		}
-		if (colmove == 0 && cnt >= 40) {
+		if (!colmove && cnt >= 40) {
 			p->y++;
 			if (!(valid(board, p, 1))) { //더 이상 움직이는 게 불가능하다면
 				for (int i = 0; i < piece->size; i++) {
@@ -121,7 +116,7 @@ void moves(struct Board* board, struct Piece* p, struct Piece* piece) {
 	}
 }
 
-void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
+void moveDown(Board* board, Piece* p, Piece* piece) {
 	static int dt = 0; //delta time;
 	static int limit = 48;
 	if (board->level <= 8) {
@@ -130,10 +125,8 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 	else {
 		switch (board->level) {
 		case 9:
-			limit = 6;
-			break;
 		case 10:
-			limit = 5;
+			limit = 15 - board->level;
 			break;
 		case 13:
 			limit = 4;
@@ -148,10 +141,11 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 			limit = 1;
 		}
 	}
+
 	//9단계+로는 범위가 아닌 switch case 이므로
 	//테스트 시 9, 10, 13, 16, 19, 29 단계로 맞출 것을 권장.
 	//단계 설정 시 board->line을 (level - 1) * 10으로 맞출 것을 권장.
-	if (board->DebugMode == 1) {
+	if (board->DebugMode) {
 		char time[20];
 		sprintf_s(time, sizeof(time), "dt: %I32d  limit: %I32d", dt, limit);
 		draw(25, 30, time);
@@ -169,10 +163,10 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 		dt++;
 	}
 	static int cnt = 0;
-	if (colmove == 1) {
+	if (colmove) {
 		cnt = 30;
 	}
-	if (colmove == 0 && cnt == 50) {
+	if (!colmove && cnt == 50) {
 		p->y++;
 		if (!(valid(board, p, 1))) { //더 이상 움직이는 게 불가능하다면
 			for (int i = 0; i < piece->size; i++) {
@@ -194,7 +188,7 @@ void moveDown(struct Board* board, struct Piece* p, struct Piece* piece) {
 	board->level = (board->line + 10) / 10;
 }
 
-int valid(struct Board* board, struct Piece* p, int mode) {
+int valid(Board* board, Piece* p, int mode) {
 	int count = 0;
 	for (int i = 0; i < p->size; i++) {
 		for (int j = 0; j < p->size; j++) {
@@ -204,7 +198,7 @@ int valid(struct Board* board, struct Piece* p, int mode) {
 				if (board->grid[y][x] == 1) {
 					return 0;
 				}
-				if (mode == 0) {
+				if (!mode) {
 					if (x >= 0 && x < 10 && y >= 0 && y < 20) { //border check
 						count++;
 					}
@@ -223,16 +217,14 @@ int valid(struct Board* board, struct Piece* p, int mode) {
 			}
 		}
 	}
-	if (count == 4) {
+	if (count == 4)
 		return 1;
-	}
-	else {
-		return 0;
-	}
+
+	return 0;
 }
 
 
-void checkHeight(struct Board* board) {
+void checkHeight(Board* board) {
 	int countOne = 0;
 	for (int i = 19; i >= 0; i--) {
 		for (int j = 0; j < 10; j++) {
@@ -256,7 +248,7 @@ void checkHeight(struct Board* board) {
 	}
 }
 
-void rotate(struct Piece* p) {
+void rotate(Piece* p) {
 	int temp;
 	for (int i = 0; i < p->size; i++) {
 		for (int j = i; j < p->size; j++) {
@@ -265,18 +257,16 @@ void rotate(struct Piece* p) {
 			p->shape[j][i] = temp;
 		}
 	}
-	int tArr[4] = { 0 };
+	int tArr[4];
 	for (int i = 0, j; i < p->size; i++) {
-		for (j = 0; j < p->size; j++) {
+		for (j = 0; j < p->size; j++)
 			tArr[p->size - j - 1] = p->shape[i][j];
-		}
-		for (j = 0; j < p->size; j++) {
+		for (j = 0; j < p->size; j++)
 			p->shape[i][j] = tArr[j];
-		}
 	}
 }
 
-void spawn(struct Piece* piece, int queue[2]) {
+void spawn(Piece* piece, int queue[2]) {
 	queue[0] = queue[1];
 	piece->x = 3;
 	piece->y = 0;
